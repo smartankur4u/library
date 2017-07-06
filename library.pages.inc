@@ -142,7 +142,7 @@ function library_transaction_form_validate($form, &$form_state) {
   $autocomplete_disabled = variable_get('library_disable_patron_autocomplete', 0) == 1;
   //Validate patron information
   if ($form_state['values']['patron_uid']) {
-    if ($form_state['values']['patron_uid_set'] && is_numeric($form_state['values']['patron_uid'])) {
+    if (isset($form_state['values']['patron_uid_set']) && is_numeric($form_state['values']['patron_uid'])) {
       $uid = $form_state['values']['patron_uid'];
       $patron = user_load($uid);
       if (empty($patron)) {
@@ -206,7 +206,8 @@ function library_transaction_form_validate($form, &$form_state) {
       $form_state['values']['barcode'] = $item->barcode;
       $form_state['values']['node_type'] = $item->type;
     }
-    if ($form_state['values']['action_aid']) {
+    if (is_numeric($form_state['values']['action_aid'])) {
+      $action = library_get_action($form_state['values']['action_aid']);
       if ($item->in_circulation == LIBRARY_REFERENCE_ONLY && $action->status_change <> LIBRARY_ACTION_NO_CHANGE) {
         form_set_error('action_aid', t('This item is not in circulation.'));
       }
@@ -284,8 +285,10 @@ function library_transaction_form_submit($form, &$form_state) {
 
 function library_transaction_view($tid) {
   global $user;
-  $transaction = library_get_transaction_by_tid($tid);
-  if (isset($transaction)) {
+  $gettransactions = library_get_transaction_by_tid($tid);
+
+  if (isset($gettransactions[0])) {
+    $transaction = $gettransactions[0];
     $list[] = t('Date: @action_date', array('@action_date' => format_date($transaction->created, 'custom', 'M j, Y')));
     $list[] = t('Item: ' . l($transaction->item_name, 'node/' . $transaction->nid));
     $list[] = t('Action: @action', array('@action' => $transaction->action_name));
