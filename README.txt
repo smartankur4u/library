@@ -3,7 +3,7 @@ Released under the GPL
 
 
 Description:
-============
+================================================================================
 This module allows users to manage nodes as assets that may be available or unavailable. Users may create custom content types and then add those content types to the library.
 
 It supports multiple copies of a library item associated with one node, and each copy may be individually made available or unavailable.
